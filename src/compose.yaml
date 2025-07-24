@@ -1,0 +1,33 @@
+services:
+  app:
+    image: node:latest
+    container_name: nodejs
+    restart: always
+    working_dir: /src
+    volumes:
+      - .:/src
+    ports:
+      - "${PORT}:3000"
+    command: sh -c "npm install && npm start"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=${PG_USER}
+      - DB_PASSWORD=${PG_PASSWORD}
+  
+  db:
+    image: postgres:latest
+    container_name: db_postgres
+    restart: always
+    ports:
+      - "${PORT_DB}:5432"
+    environment:
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_DB=${PG_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    
+volumes:
+  pgdata:
